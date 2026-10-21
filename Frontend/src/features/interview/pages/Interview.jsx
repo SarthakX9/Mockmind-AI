@@ -14,6 +14,18 @@ const NAV_ITEMS = [
 // ── Sub-components ────────────────────────────────────────────────────────────
 const QuestionCard = ({ item, index }) => {
     const [ open, setOpen ] = useState(false)
+    const [ copied, setCopied ] = useState(null)
+
+    const handleCopy = async (text, type) => {
+        try {
+            await navigator.clipboard.writeText(text)
+            setCopied(type)
+            setTimeout(() => setCopied(null), 1500)
+        } catch (error) {
+            console.error('Failed to copy:', error)
+        }
+    }
+
     return (
         <div className='q-card'>
             <div className='q-card__header' onClick={() => setOpen(o => !o)}>
@@ -32,7 +44,25 @@ const QuestionCard = ({ item, index }) => {
                     <div className='q-card__section'>
                         <span className='q-card__tag q-card__tag--answer'>Model Answer</span>
                         <p>{item.answer}</p>
+                        <button
+                            className='copy-button'
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                handleCopy(item.answer, 'answer')
+                            }}
+                        >
+                            {copied === 'answer' ? 'Copied!' : 'Copy Answer'}
+                        </button>
                     </div>
+                    <button
+                        className='copy-button'
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            handleCopy(item.question, 'question')
+                        }}
+                    >
+                        {copied === 'question' ? 'Copied!' : 'Copy Question'}
+                    </button>
                 </div>
             )}
         </div>
